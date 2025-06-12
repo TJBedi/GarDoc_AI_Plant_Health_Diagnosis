@@ -2,11 +2,11 @@
 
 ---
 
-### 🖼️ Screenshots
-![Upload Interface](images/interface1.jpg)
-
-![Upload Interface](images/interface2.jpg)
-
+## 🖼️ Screenshots
+### HomePage:
+![Homepage](static/images/interface1.jpg)
+### Prediction Page:
+![Prediction_Page](static/images/interface2.jpg)
 ---
 
 ## 📖 Project Overview  
