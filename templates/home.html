@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Homepage</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        /* Loader Animation */
+        .loader-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #121212;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loader {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 5px solid transparent;
+            border-top-color: #00ffcc;
+            border-bottom-color: #ff00cc;
+            animation: spin 1.5s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Header */
+        header {
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeInDown 1s ease forwards;
+            animation-delay: 1s;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00ffcc, #ff00cc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .prediction-btn {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #00ffcc, #ff00cc);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .prediction-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Gallery Section */
+        .gallery-title {
+            text-align: center;
+            margin: 2rem 0;
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #00ffcc, #ff00cc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s ease forwards;
+            animation-delay: 1.3s;
+        }
+        
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease forwards;
+            animation-delay: 1.6s;
+        }
+        
+        .gallery-item {
+            position: relative;
+            height: 300px;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .gallery-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .gallery-item:hover .gallery-img {
+            transform: scale(1.1);
+        }
+        
+        .gallery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            padding: 20px;
+            transform: translateY(100%);
+            transition: transform 0.5s ease;
+        }
+        
+        .gallery-item:hover .gallery-overlay {
+            transform: translateY(0);
+        }
+        
+        .gallery-title-small {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+        }
+        
+        .gallery-desc {
+            font-size: 0.9rem;
+            color: #cccccc;
+            display: none;
+        }
+        
+        /* Description Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .modal-content {
+            background-color: #1e1e1e;
+            width: 80%;
+            max-width: 700px;
+            border-radius: 10px;
+            padding: 30px;
+            position: relative;
+            transform: translateY(50px);
+            opacity: 0;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+        
+        .modal.active .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            color: #ffffff;
+            cursor: pointer;
+        }
+        
+        .modal-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #00ffcc, #ff00cc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .modal-desc {
+            line-height: 1.6;
+            color: #cccccc;
+        }
+        
+        .modal-img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+            animation-delay: 1.8s;
+        }
+        
+        footer p {
+            color: #777777;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loader Animation -->
+    <div class="loader-container">
+        <div class="loader"></div>
+    </div>
+    
+    <!-- Header -->
+    <header>
+        <div class="logo">GarDoc</div>
+        <button class="prediction-btn">Prediction</button>
+    </header>
+    
+    <!-- Gallery Section -->
+    <h1 class="gallery-title">Plant Library</h1>
+    
+    <div class="gallery-container">
+        <!-- Gallery Item 1 -->
+        <div class="gallery-item" data-id="1">
+            <img src="./static/images/apple.jpg" alt="Apple" class="gallery-img">
+            <div class="gallery-overlay">
+                <h3 class="gallery-title-small">Apple </h3>
+                <p class="gallery-desc">Explore the beauty of nature through this stunning landscape view.</p>
+            </div>
+        </div>
+        
+        <!-- Gallery Item 2 -->
+        <div class="gallery-item" data-id="2">
+            <img src="./static/images/bringal.jpg" alt="Gallery Image 2" class="gallery-img">
+            <div class="gallery-overlay">
+                <h3 class="gallery-title-small">Brinjal</h3>
+                <p class="gallery-desc">Discover the vibrant cityscape filled with modern architecture.</p>
+            </div>
+        </div>
+        
+        <!-- Gallery Item 3 -->
+        <div class="gallery-item" data-id="3">
+            <img src="./static/images/lemon plant.jpg" alt="Gallery Image 3" class="gallery-img">
+            <div class="gallery-overlay">
+                <h3 class="gallery-title-small">Lemon</h3>
+                <p class="gallery-desc">Dive into the deep blue sea and witness marine life at its best.</p>
+            </div>
+        </div>
+        
+        <!-- Gallery Item 4 -->
+        <div class="gallery-item" data-id="4">
+            <img src="./static/images/money.jpg" alt="Gallery Image 4" class="gallery-img">
+            <div class="gallery-overlay">
+                <h3 class="gallery-title-small">Money Plant</h3>
+                <p class="gallery-desc">Feel the thrill of reaching the highest mountain peaks in the world.</p>
+            </div>
+        </div>
+        
+        <!-- Gallery Item 5 -->
+        <div class="gallery-item" data-id="5">
+            <img src="./static/images/neem.jpg" alt="Gallery Image 5" class="gallery-img">
+            <div class="gallery-overlay">
+                <h3 class="gallery-title-small">Neem</h3>
+                <p class="gallery-desc">Experience the vast beauty of golden sand dunes stretching to the horizon.</p>
+            </div>
+        </div>
+        
+        <!-- Gallery Item 6 -->
+        <div class="gallery-item" data-id="6">
+            <img src="./static/images/potato.jpg" alt="Gallery Image 6" class="gallery-img">
+            <div class="gallery-overlay">
+                <h3 class="gallery-title-small">Potato</h3>
+                <p class="gallery-desc">Embark on an exciting journey through lush green forests full of wildlife.</p>
+            </div>
+        </div>
+        
+        <!-- Gallery Item 7 -->
+        <div class="gallery-item" data-id="7">
+            <img src="./static/images/tomato.jpg" alt="Gallery Image 7" class="gallery-img">
+            <div class="gallery-overlay">
+                <h3 class="gallery-title-small">Tomato</h3>
+                <p class="gallery-desc">Witness the magical aurora lights dancing across the night sky.</p>
+            </div>
+        </div>
+        
+        <!-- Gallery Item 8 -->
+        <div class="gallery-item" data-id="8">
+            <img src="./static/images/tulsi.jpg" alt="Gallery Image 8" class="gallery-img">
+            <div class="gallery-overlay">
+                <h3 class="gallery-title-small">Tulsi</h3>
+                <p class="gallery-desc">Listen to the soothing sound of cascading waterfalls in a tropical paradise.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Description Modal -->
+    <div class="modal">
+        <div class="modal-content">
+            <button class="close-modal">×</button>
+            <img src="" alt="Modal Image" class="modal-img">
+            <h2 class="modal-title"></h2>
+            <p class="modal-desc"></p>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <p></p>
+    </footer>
+
+    <script>
+        // Loader Animation
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const loaderContainer = document.querySelector('.loader-container');
+                loaderContainer.style.opacity = '0';
+                setTimeout(() => {
+                    loaderContainer.style.display = 'none';
+                }, 500);
+            }, 2000);
+        });
+
+        // Gallery Item Click Event
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        const modal = document.querySelector('.modal');
+        const modalImage = document.querySelector('.modal-img');
+        const modalTitle = document.querySelector('.modal-title');
+        const modalDesc = document.querySelector('.modal-desc');
+        const closeModal = document.querySelector('.close-modal');
+
+        // Data for gallery items descriptions
+        const galleryData = [
+            {
+                id: 1,
+                title: "Apple plant",
+                description: "Apple trees thrive in temperate climates with cool winters and warm summers. They need a period of winter dormancy, or chilling hours (0°C to 7°C), for proper flowering. In warmer areas like Bengaluru, low-chill varieties such as ‘Anna’ and ‘Dorsett Golden’ require 200–400 chill hours. Ideal temperatures for growth range from 15°C to 25°C. Extreme cold or heat can harm trees and fruit. Apple trees need full sunlight, well-drained slightly acidic soil, and consistent moisture for healthy development."
+            },
+            {
+                id: 2,
+                title: "brinjal",
+                description: "Eggplant (brinjal) grows best in warm climates with temperatures between 20°C to 30°C. It requires well-drained, slightly acidic soil and full sunlight to thrive. The plant prefers a steady water supply but is sensitive to waterlogging. Eggplant requires a long growing season, typically 3 to 4 months, to produce healthy fruit. Avoid planting in areas with frost or extreme temperatures above 35°C, as it can harm the plant's growth and fruit development."
+            },
+            {
+                id: 3,
+                title: "Lemon",
+                description: "Lemon trees thrive in warm, subtropical to tropical climates with temperatures ranging from 20°C to 30°C. They require full sunlight and well-drained, slightly acidic soil. Ideal for growing in regions with mild winters, lemons need consistent watering but should not be overwatered. While they are sensitive to frost, lemon trees can tolerate brief periods of cold as low as 1°C. Regular feeding with a balanced fertilizer promotes healthy growth and abundant fruit production."
+            },
+            {
+                id: 4,
+                title: "Money Plant",
+                description: "Money plants, also known as pothos, thrive in warm, humid conditions with indirect sunlight. They prefer temperatures between 18°C to 30°C. These low-maintenance plants can grow in soil or water, making them perfect for indoor spaces. While they can tolerate low light, they grow best with moderate sunlight. Money plants need occasional watering, ensuring the soil remains moist but not waterlogged. Known for their air-purifying qualities, they are great for improving indoor air quality.."
+            },
+            {
+                id: 5,
+                title: "Neem",
+                description: "Neem trees thrive in hot, dry climates and are well-suited to tropical and subtropical regions. They prefer temperatures between 25°C to 35°C and require full sunlight to grow. Neem trees are drought-tolerant but grow best with moderate watering, ensuring well-drained soil. They are highly resilient and can tolerate a range of soil types. Known for their medicinal properties, neem leaves and oil are used in various health and skincare remedies. The tree also acts as a natural pesticide."
+            },
+            {
+                id: 7,
+                title: "Tomato",
+                description: "Tomato plants thrive in warm, sunny conditions, with ideal temperatures ranging from 20°C to 25°C. They require full sunlight for at least 6-8 hours a day to produce healthy fruits. Tomatoes grow best in well-drained, slightly acidic soil and need consistent moisture without waterlogging. They can be grown in both outdoor gardens and containers. The plants should be spaced properly to ensure good air circulation. Extreme cold or frost can damage tomato plants, making them unsuitable for cold climates."
+            },
+            {
+                id: 6,
+                title: "Potato",
+                description: "Potato plants thrive in cool, temperate climates with temperatures ranging from 15°C to 20°C. They require well-drained, loose, slightly acidic soil for optimal growth. Potatoes grow best with plenty of sunlight, around 6-8 hours a day. Regular watering is essential, but soil should not be waterlogged. They can be grown in gardens or containers. The plants need space for tuber development, and frost can damage both plants and crops, making them unsuitable for colder regions.."
+            },
+            {
+                id: 8,
+                title: "Tulsi",
+                description: "Tulsi, also known as Holy Basil, thrives in warm, tropical climates with temperatures ranging from 25°C to 35°C. It prefers well-drained, fertile soil and requires plenty of sunlight, ideally 4-6 hours a day. Tulsi needs moderate watering, ensuring the soil remains moist but not waterlogged. It is a hardy plant, often grown for its medicinal and spiritual benefits. Tulsi can be grown in pots or gardens and is sensitive to extreme cold temperatures, which can damage the plant."
+            }
+        ];
+
+        // Open modal with gallery item data
+        galleryItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const itemId = parseInt(item.getAttribute('data-id'));
+                const galleryItem = galleryData.find(data => data.id === itemId);
+                
+                if (galleryItem) {
+                    modalImage.src = item.querySelector('.gallery-img').src;
+                    modalTitle.textContent = galleryItem.title;
+                    modalDesc.textContent = galleryItem.description;
+                    modal.classList.add('active');
+                }
+            });
+        });
+
+        // Close modal
+        closeModal.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+
+        // Close modal when clicking outside of modal content
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+
+        // Prediction button - Link to prediction page
+        const predictionBtn = document.querySelector('.prediction-btn');
+            predictionBtn.addEventListener('click', () => {
+            window.location.href = "/predict";  // Navigate to prediction page
+        });
+
+        // Animation for gallery items on scroll
+        const animateOnScroll = () => {
+            const items = document.querySelectorAll('.gallery-item');
+            items.forEach((item, index) => {
+                const itemPosition = item.getBoundingClientRect().top;
+                const screenPosition = window.innerHeight / 1.3;
+                
+                if (itemPosition < screenPosition) {
+                    item.style.animation = `fadeInUp 0.5s ease forwards ${index * 0.1}s`;
+                    item.style.opacity = '1';
+                }
+            });
+        };
+
+        window.addEventListener('scroll', animateOnScroll);
+    </script>
+</body>
+</html>

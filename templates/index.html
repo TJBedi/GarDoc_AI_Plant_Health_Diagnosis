@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌿 GarDoc</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <style>
+        :root {
+            --primary: #4caf50;
+            --primary-light: #6fbf73;
+            --primary-dark: #3b8c3d;
+            --bg-dark: #121212;
+            --bg-card: #1e1e1e;
+            --text: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --accent: #1a2e1b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            margin: 0;
+            padding: 0;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+            url("{{ url_for('static', filename='garden_bg.jpeg') }}") no-repeat center center;
+            background-size: cover;
+            height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            animation: glow 3s infinite;
+        }
+
+        @keyframes glow {
+            0% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.3;
+            }
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .container {
+            max-width: 800px;
+            background-color: var(--bg-card);
+            margin: 0 auto 60px auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: var(--primary-light);
+        }
+
+        .upload-container {
+            border: 2px dashed #444;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .upload-container:hover {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.2);
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            margin: 25px auto;
+            width: 200px;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-btn {
+            display: block;
+            padding: 14px 24px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .file-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .submit-btn {
+            display: block;
+            margin: 25px auto;
+            padding: 16px 32px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .submit-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .file-name {
+            margin-top: 15px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            background-color: var(--accent);
+            border-left: 5px solid var(--primary);
+            border-radius: 12px;
+            opacity: 0;
+            animation: slideIn 0.5s ease-out 0.2s forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .prediction-text {
+            font-size: 1.8rem;
+            margin: 10px 0;
+            color: var(--primary-light);
+            text-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+        }
+
+        .care {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: rgba(30, 30, 30, 0.7);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            animation: fadeUp 0.5s ease-out 0.4s forwards;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .care h3 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            font-size: 1.3rem;
+        }
+
+        .care h3 i {
+            margin-right: 10px;
+        }
+
+        .care ul {
+            padding-left: 20px;
+            list-style-type: none;
+        }
+
+        .care li {
+            margin-bottom: 12px;
+            position: relative;
+            padding-left: 28px;
+            opacity: 0;
+        }
+
+        .care li::before {
+            content: '🌱';
+            position: absolute;
+            left: 0;
+            top: 2px;
+        }
+
+        .result-image {
+            margin-top: 25px;
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+            opacity: 0;
+            animation: zoomIn 0.5s ease-out 0.6s forwards;
+        }
+
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .result-image:hover {
+            transform: scale(1.02);
+        }
+
+        .image-preview {
+            display: none;
+            max-width: 300px;
+            max-height: 300px;
+            margin: 20px auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .image-preview:hover {
+            transform: scale(1.05);
+        }
+
+        .loader {
+            display: none;
+            margin: 20px auto;
+            width: 50px;
+            height: 50px;
+            position: relative;
+        }
+
+        .loader:before,
+        .loader:after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            animation: pulse 2s linear infinite;
+        }
+
+        .loader:before {
+            box-shadow: 0 0 0 var(--primary);
+        }
+
+        .loader:after {
+            box-shadow: 0 0 0 var(--primary-light);
+            animation-delay: -1s;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 20px rgba(76, 175, 80, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+            }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            position: relative;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 30%;
+            right: 30%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--text-secondary), transparent);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 0 15px 40px 15px;
+            }
+
+            .hero {
+                height: 180px;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hero">
+        <h1 class="animate_animated animate_fadeIn">🌿 GarDoc</h1>
+    </div>
+
+    <div class="container">
+        <form method="post" enctype="multipart/form-data" id="upload-form">
+            <div class="upload-container">
+                <h2 class="animate_animated animate_fadeIn">Upload a Plant Image</h2>
+                <p>Take a clear photo of a plant leaf to identify the plant and get care instructions</p>
+
+                <div class="file-input-wrapper">
+                    <button type="button" class="file-btn">Choose Image</button>
+                    <input type="file" name="file" id="file-input" accept="image/*" required>
+                </div> 
+
+                <div class="file-name" id="file-name">No file selected</div>
+                <img class="image-preview" id="image-preview" src="#" alt="Image Preview">
+            </div>
+
+            <button type="submit" class="submit-btn" id="submit-btn">Predict</button>
+            <div class="loader" id="loader"></div>
+        </form>
+
+        {% if prediction %}
+        <div class="result">
+            <div class="result-header">
+                <h2 class="prediction-text">🔍 {{ prediction }}</h2>
+            </div>
+
+            {% if care %}
+            <div class="care">
+                <h3><i>📋</i> Care Tips</h3>
+                <ul id="care-tips-list">
+                    {% for tip in care_tips %}
+                    <li>{{ tip }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <img class="result-image" src="{{ url_for('static', filename='uploads/' + image_file) }}"
+                alt="Uploaded Plant Image">
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="footer">
+    </div>
+
+    <script>
+        // Image preview functionality
+        const fileInput = document.getElementById('file-input');
+        const fileNameDisplay = document.getElementById('file-name');
+        const imagePreview = document.getElementById('image-preview');
+        const uploadForm = document.getElementById('upload-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const loader = document.getElementById('loader');
+
+        fileInput.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                const fileName = this.files[0].name;
+                fileNameDisplay.textContent = fileName;
+                fileNameDisplay.classList.add('animate_animated', 'animate_fadeIn');
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    imagePreview.classList.add('animate_animated', 'animate_zoomIn');
+                }
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                fileNameDisplay.textContent = 'No file selected';
+                imagePreview.style.display = 'none';
+            }
+        });
+
+        uploadForm.addEventListener('submit', function () {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Analyzing...';
+            submitBtn.style.opacity = '0.7';
+            loader.style.display = 'block';
+        });
+
+        // Animate care tips with staggered delay
+        document.addEventListener('DOMContentLoaded', function () {
+            const careTips = document.querySelectorAll('#care-tips-list li');
+            if (careTips.length > 0) {
+                careTips.forEach((tip, index) => {
+                    setTimeout(() => {
+                        tip.style.animation = 'fadeUp 0.5s ease-out forwards';
+                        tip.style.opacity = '1';
+                    }, 800 + (index * 200));
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
